@@ -1,11 +1,12 @@
 import argparse
-
+from html import parser
 import socket
 import threading
 import time
 from queue import Queue
 
 q = Queue()
+known = 0
 common_ports = {22: 'SSH', 23: 'Telnet', 25: 'SMTP', 
                 53: 'DNS', 80: 'HTTP', 110: 'POP3', 
                 143: 'IMAP', 443: 'HTTPS', 3306: 'MySQL', 
@@ -14,9 +15,9 @@ def known_banner():
     print("Known banner function")
 
 
-def worker(target_ip, stop_event):
+def worker():
 
-    while not q.empty() and not stop_event.is_set():
+    while not q.empty():
         
         try:
             port = q.get()
@@ -28,26 +29,32 @@ def worker(target_ip, stop_event):
             
             
             
-        except req.exceptions.RequestException as e:
+        except Exception as e:
             print('Error')
 
 
 def main():
 
     parser = argparse.ArgumentParser()
+    group = parser.add_mutually_exclusive_group(required=True)
 
-    parser.add_argument('--wordlist', '-w', dest='wordlist', required=True)
-    parser.add_argument('--username', '-u', dest='uname', required=True)
-    parser.add_argument('--target-url', '-url', dest='url', default='http://127.0.0.1:5000/login')
-    parser.add_argument('--threads', '-t', dest='threads', type=int, default=2)
-    parser.add_argument('--delay', '-d', dest='delay', type=int, default=0.25)
-    parser.add_argument('--stop-on-success', '-sS', dest='stopOnSuccess', action='store_true')
-    parser.add_argument('--log', '-l', dest='log', required=True)
-    parser.add_argument('--allow-remote', '-aR', dest='ar', action='store_true')
+    group.add_argument('--quick-scan', '-qs', dest='quick_scan', action='store_true')
+    group.add_argument('--full-scan', '-fs', dest='full_scan', action='store_true')
+    parser.add_argument('--ip-range', '-ip', dest='ip_range', action='store_true')
+    parser.add_argument('--threads', '-t', dest='threads', type=int, default=5)
+    parser.add_argument('--delay', '-d', dest='delay', type=int, default=1)
+    parser.add_argument('--verbose', '-v', dest='verbose', action='store_true')
 
     args = parser.parse_args()
 
-    for port in range(args.start_port, args.end_port + 1):
+    if args.ip_range:
+        ip_start_range = input("Enter starting IP: ")
+        ip_end_range = input("Enter ending IP: ")
+
+    start_port = int(input("Enter start port: "))
+    end_port = int(input("Enter end port: "))
+    
+    for port in range(start_port, end_port + 1):
         q.put(port)
         if known == 0:
             if port in common_ports:
