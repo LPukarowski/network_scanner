@@ -1,0 +1,9 @@
+IP ADDRESS           PORT     STATUS     SERVICE/BANNER
+192.168.233.152      21       OPEN       220 (vsFTPd 3.0.5)
+192.168.233.152      22       OPEN       SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.9
+IP ADDRESS           PORT     STATUS     SERVICE/BANNER
+192.168.233.152      22       OPEN       SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.9
+192.168.233.152      21       OPEN       220 (vsFTPd 3.0.5)
+IP ADDRESS           PORT     STATUS     SERVICE/BANNER
+192.168.233.152      21       OPEN       220 (vsFTPd 3.0.5)
+192.168.233.152      22       OPEN       SSH-2.0-OpenSSH_8.2p1 Ubuntu-4ubuntu0.9
