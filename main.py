@@ -5,6 +5,7 @@ import time
 import sys
 from colorama import init, Fore
 from tqdm import tqdm
+from pathlib import Path
 import output
 import validate
 import sweep
@@ -48,9 +49,9 @@ parser.add_argument('--display-closed', '-dc', dest='display_closed', action='st
 parser.add_argument('--display-timeout', '-dt', dest='display_timeout', action='store_true',
                     help='Display timed out ports in the output and log file')
 
-group_file.add_argument('--logfile', '-l', dest='logfile', type=str, default=None,
+group_file.add_argument('--log', '-l', dest='logFile', type=str, default=None,
                     help='Filename to save the scan results (optional e.g., scan.log')
-group_file.add_argument('--csv', '-c', dest='csv', type=str, default=None,
+group_file.add_argument('--csv', '-c', dest='csvFile', type=str, default=None,
                     help='Filename to save the scan results in CSV format (optional e.g., scan.csv)')
 args = parser.parse_args()
 
@@ -116,12 +117,25 @@ def main():
 
     if args.ipr:
         if not validate.regex_range(args.ipr):
-            print(Fore.RED + "Invalid IP range format. Use format like 192-193.168.1-2.1-255")
+            print(Fore.RED + "Invalid IP range format. Use format like 192-193.168.1-2.1-255", file=sys.stderr)
             sys.exit(1)
     else:
         if not validate.regex_ip(args.ip):
-            print(Fore.RED + "Invalid IP format. Use format like 192.168.1.1")
+            print(Fore.RED + "Invalid IP format. Use format like 192.168.1.1", file=sys.stderr)
             sys.exit(1)
+
+    if args.logFile:
+        if not validate.sanitize_file(args.logFile):
+            ext = Path(args.logFile).suffix.lower()
+            print(Fore.RED + f"Invalid file type '{ext}'. Only .log and .txt accepted as file type.", file=sys.stderr)
+            sys.exit(1)
+
+    if args.csvFile:
+        if not validate.sanitize_csv(args.csvFile):
+            ext = Path(args.csvFile).suffix.lower()
+            print(Fore.RED + f"Invalid file type '{ext}'. File type must be .csv.", file=sys.stderr)
+            sys.exit(1)
+
 
     start_port = 0
     if args.quick_scan:
@@ -162,10 +176,10 @@ def main():
     progress_bar.close()
     end_time = time.time()
 
-    if args.logfile:
-        output.logAttempt(log=args.logfile, display_closed=args.display_closed, display_timeout=args.display_timeout)
-    elif args.csv:
-        output.log_csv(log=args.csv, display_closed=args.display_closed, display_timeout=args.display_timeout)
+    if args.logFile:
+        output.logAttempt(log=args.logFile, display_closed=args.display_closed, display_timeout=args.display_timeout)
+    elif args.csvFile:
+        output.log_csv(log=args.csvFile, display_closed=args.display_closed, display_timeout=args.display_timeout)
 
     output.printout(start=start_time, end=end_time, display_closed=args.display_closed, display_timeout=args.display_timeout)
 
