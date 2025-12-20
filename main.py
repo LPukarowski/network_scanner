@@ -82,7 +82,7 @@ def worker(*, delay, progress_bar, verbose, locking):
                     globals.results[ip].add((port, status, banner))
                 if verbose:
                     with locking:
-                        print(Fore.WHITE + f"{port :<8}" + Fore.GREEN + "OPEN" + Fore.WHITE + f" {banner if banner else globals.common_ports.get(port, '')}")
+                        print(Fore.WHITE + f"{port :<8}" + Fore.GREEN + "OPEN" + Fore.WHITE + f" {banner if banner else globals.possible_service.get(port, '')}")
             else:
                 status = 'closed'
                 with locking:
@@ -163,11 +163,11 @@ def main():
     end_time = time.time()
 
     if args.logfile:
-        output.logAttempt(ports=globals.common_ports, i=globals.results, log=args.logfile, display_closed=args.display_closed, display_timeout=args.display_timeout)
+        output.logAttempt(log=args.logfile, display_closed=args.display_closed, display_timeout=args.display_timeout)
     elif args.csv:
-        output.log_csv(ports=globals.common_ports, i=globals.results, log=args.csv, display_closed=args.display_closed, display_timeout=args.display_timeout)
+        output.log_csv(log=args.csv, display_closed=args.display_closed, display_timeout=args.display_timeout)
 
-    output.printout(i=globals.results, start=start_time, end=end_time, display_closed=args.display_closed, display_timeout=args.display_timeout)
+    output.printout(start=start_time, end=end_time, display_closed=args.display_closed, display_timeout=args.display_timeout)
 
 if __name__ == "__main__":
     main()

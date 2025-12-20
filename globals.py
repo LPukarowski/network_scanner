@@ -5,7 +5,11 @@ que = Queue()
 results = {}
 ip_active = []
 
-common_ports = {
+common_vuln_ports = {
+    
+}
+
+possible_service = {
     20: "FTP-Data", 21: "FTP", 22: "SSH",
     23: "Telnet", 25: "SMTP", 53: "DNS", 
     67: "DHCP-Server", 68: "DHCP-Client", 69: "TFTP",
